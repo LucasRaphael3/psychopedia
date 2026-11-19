@@ -1,4 +1,5 @@
 import "server-only";
+import { attachDatabasePool } from "@vercel/functions";
 import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import { getDatabaseUrl } from "@/lib/env";
@@ -11,12 +12,16 @@ let cached: { client: Pool; db: NodePgDatabase<typeof schema> } | undefined;
 export function getDb() {
   let client = globals.__appPostgresPool;
   if (!client) {
+    const onVercel = Boolean(process.env.VERCEL);
     client = new Pool({
       connectionString: getDatabaseUrl(),
       max: 5,
       connectionTimeoutMillis: 5_000,
-      idleTimeoutMillis: 30_000,
+      // Serverless instances suspend between requests; release idle connections quickly there.
+      idleTimeoutMillis: onVercel ? 5_000 : 30_000,
     });
+    // Keeps the instance alive until idle connections close, so they don't leak while suspended.
+    if (onVercel) attachDatabasePool(client);
     client.on("error", (error) => {
       logger.error({ code: (error as NodeJS.ErrnoException).code }, "Idle database connection failed");
     });
