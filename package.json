@@ -15,7 +15,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:seed": "node --env-file=.env.local scripts/seed.mjs",
-    "check": "pnpm lint && pnpm typecheck && pnpm lint:typed && pnpm lint:rules && pnpm test && pnpm build"
+    "check": "pnpm lint && pnpm typecheck && pnpm lint:typed && pnpm lint:rules && pnpm test && pnpm build",
+    "storage:setup": "node --env-file=.env.local scripts/setup-storage.mjs"
   },
   "dependencies": {
     "@vercel/functions": "^3.11.3",

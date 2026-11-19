@@ -18,11 +18,12 @@ Não há papéis administrativos no MVP.
 3. **Leitura:** a home tem um destaque, "Essenciais de hoje" e "Mais recentes" com paginação. Também há páginas por categoria, página de artigo com "Leia também" e busca por título ou resumo.
 4. **Publicação:** formulário com título, resumo, categoria, texto e link de fonte opcional.
 5. **Chat:** iniciar uma conversa pelo perfil de um autor ou por @usuario. Lista de conversas com contador de não lidas e conversa que se atualiza a cada 3 s.
-6. **Compartilhar artigo:** a partir do artigo, enviar para outro membro pelo chat com mensagem opcional. O artigo aparece como cartão na conversa.
+6. **Fotos no chat:** anexar uma foto (JPG, PNG ou WebP, redimensionada no navegador) com legenda opcional. Só os participantes da conversa conseguem vê-la.
+7. **Compartilhar artigo:** a partir do artigo, enviar para outro membro pelo chat com mensagem opcional. O artigo aparece como cartão na conversa.
 
 ## Fora do escopo (por enquanto)
 
-Edição e exclusão de artigos, comentários, curtidas, upload de imagens, recuperação de senha, verificação de e-mail, moderação e denúncias, notificações por e-mail, chat em grupo e tempo real via WebSocket.
+Edição e exclusão de artigos, comentários, curtidas, imagens nos artigos, GIFs e vídeos no chat, recuperação de senha, verificação de e-mail, moderação e denúncias, notificações por e-mail, chat em grupo e tempo real via WebSocket.
 
 ## Requisitos
 

@@ -12,7 +12,14 @@ export type ChatMessage = {
   senderId: string;
   createdAt: string;
   article: { slug: string; title: string; summary: string } | null;
+  image: { url: string; width: number; height: number } | null;
 };
+
+export type ChatImageInput = { path: string; width: number; height: number };
+
+export function imageUrl(messageId: string) {
+  return `/api/chat/images/${messageId}`;
+}
 
 function participantOf(userId: string) {
   return or(eq(conversations.userAId, userId), eq(conversations.userBId, userId));
@@ -56,6 +63,9 @@ export async function listMessages(conversationId: string, after?: Date): Promis
       articleSlug: articles.slug,
       articleTitle: articles.title,
       articleSummary: articles.summary,
+      imagePath: messages.imagePath,
+      imageWidth: messages.imageWidth,
+      imageHeight: messages.imageHeight,
     })
     .from(messages)
     .leftJoin(articles, eq(articles.id, messages.articleId))
@@ -68,7 +78,20 @@ export async function listMessages(conversationId: string, after?: Date): Promis
     senderId: r.senderId,
     createdAt: r.createdAt.toISOString(),
     article: r.articleSlug && r.articleTitle ? { slug: r.articleSlug, title: r.articleTitle, summary: r.articleSummary ?? "" } : null,
+    image: r.imagePath ? { url: imageUrl(r.id), width: r.imageWidth ?? 800, height: r.imageHeight ?? 600 } : null,
   }));
+}
+
+/** Storage path of a message image, only if the user participates in its conversation. */
+export async function getImagePathForUser(messageId: string, userId: string) {
+  const db = getDb();
+  const [row] = await db
+    .select({ path: messages.imagePath })
+    .from(messages)
+    .innerJoin(conversations, eq(conversations.id, messages.conversationId))
+    .where(and(eq(messages.id, messageId), participantOf(userId)))
+    .limit(1);
+  return row?.path ?? null;
 }
 
 export async function markConversationRead(conversationId: string, userId: string) {
@@ -104,7 +127,12 @@ export async function listConversations(userId: string) {
   const ids = convs.map((c) => c.id);
   const [lastMessages, unread] = await Promise.all([
     db
-      .selectDistinctOn([messages.conversationId], { conversationId: messages.conversationId, body: messages.body, senderId: messages.senderId })
+      .selectDistinctOn([messages.conversationId], {
+        conversationId: messages.conversationId,
+        body: messages.body,
+        senderId: messages.senderId,
+        imagePath: messages.imagePath,
+      })
       .from(messages)
       .where(inArray(messages.conversationId, ids))
       .orderBy(messages.conversationId, desc(messages.createdAt)),
@@ -124,7 +152,7 @@ export async function listConversations(userId: string) {
       id: c.id,
       updatedAt: c.updatedAt,
       other: isA ? { name: c.bName, username: c.bUsername } : { name: c.aName, username: c.aUsername },
-      lastMessage: last ? `${last.senderId === userId ? "Você: " : ""}${last.body}` : "",
+      lastMessage: last ? `${last.senderId === userId ? "Você: " : ""}${last.body || (last.imagePath ? "📷 Foto" : "")}` : "",
       unread: unreadById.get(c.id) ?? 0,
     };
   });
@@ -140,10 +168,13 @@ export async function countUnread(userId: string) {
   return row?.total ?? 0;
 }
 
-export async function insertMessage(input: { conversationId: string; senderId: string; body: string; articleId?: string | null }) {
+type NewMessage = { conversationId: string; senderId: string; body: string; articleId?: string | null; image?: ChatImageInput };
+
+export async function insertMessage({ image, ...input }: NewMessage) {
   const db = getDb();
+  const values = image ? { ...input, imagePath: image.path, imageWidth: image.width, imageHeight: image.height } : input;
   const message = await db.transaction(async (tx) => {
-    const [created] = await tx.insert(messages).values(input).returning({ id: messages.id, createdAt: messages.createdAt });
+    const [created] = await tx.insert(messages).values(values).returning({ id: messages.id, createdAt: messages.createdAt });
     await tx.update(conversations).set({ updatedAt: created.createdAt }).where(eq(conversations.id, input.conversationId));
     return created;
   });

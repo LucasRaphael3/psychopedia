@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { check, index, pgTable, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
+import { check, index, integer, pgTable, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
 
 // RLS is enabled without policies so Supabase's public Data API cannot read these tables;
 // the app connects with a privileged role that bypasses RLS.
@@ -75,6 +75,10 @@ export const messages = pgTable(
     senderId: uuid("sender_id").notNull().references(() => users.id, { onDelete: "cascade" }),
     body: text("body").notNull(),
     articleId: uuid("article_id").references(() => articles.id, { onDelete: "set null" }),
+    // Object key in the private Supabase Storage bucket; served only to participants.
+    imagePath: text("image_path"),
+    imageWidth: integer("image_width"),
+    imageHeight: integer("image_height"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     readAt: timestamp("read_at", { withTimezone: true }),
   },

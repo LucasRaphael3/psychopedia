@@ -9,6 +9,12 @@ export const databaseUrlSchema = z.string().refine((value) => {
   }
 });
 
+export const supabaseUrlSchema = z
+  .url({ protocol: /^https$/ })
+  .transform((value) => value.replace(/\/+$/, ""));
+
+export const secretKeySchema = z.string().min(20);
+
 export const logLevelSchema = z.enum(["trace", "debug", "info", "warn", "error", "fatal", "silent"]).default("info");
 
 export function parseEnv<T>(key: string, value: unknown, schema: z.ZodType<T>): T {
