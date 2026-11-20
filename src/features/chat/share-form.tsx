@@ -4,12 +4,12 @@ import { useActionState } from "react";
 import { Field, FormMessage, SubmitButton } from "@/components/form-fields";
 import { shareArticle } from "./actions";
 
-export function ShareForm({ slug, contacts }: { slug: string; contacts: { name: string; username: string }[] }) {
+export function ShareForm({ articleId, contacts }: { articleId: string; contacts: { name: string; username: string }[] }) {
   const [state, action] = useActionState(shareArticle, undefined);
   return (
     <form action={action} className="space-y-5" noValidate>
       <FormMessage message={state?.message} />
-      <input type="hidden" name="slug" value={slug} />
+      <input type="hidden" name="articleId" value={articleId} />
       <Field
         name="username"
         label="Enviar para (nome de usuário)"

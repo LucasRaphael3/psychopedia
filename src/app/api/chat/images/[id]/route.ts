@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { getCurrentUser } from "@/features/auth/session";
-import { getImagePathForUser } from "@/features/chat/queries";
+import { getMessageForUser } from "@/features/chat/queries";
 import { downloadChatImage } from "@/features/chat/storage";
 
 export const dynamic = "force-dynamic";
@@ -13,10 +13,10 @@ export async function GET(_request: Request, ctx: RouteContext<"/api/chat/images
   const { id } = await ctx.params;
   if (!z.uuid().safeParse(id).success) return new Response("Not found", { status: 404 });
 
-  const path = await getImagePathForUser(id, user.id);
-  if (!path) return new Response("Not found", { status: 404 });
+  const message = await getMessageForUser(id, user.id);
+  if (!message?.imagePath) return new Response("Not found", { status: 404 });
 
-  const image = await downloadChatImage(path);
+  const image = await downloadChatImage(message.imagePath);
   if (!image) return new Response("Not found", { status: 404 });
 
   return new Response(image.body, {

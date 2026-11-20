@@ -25,10 +25,10 @@ Node.js 20.9 ou superior (testado com 22.17) e pnpm 10 (`corepack enable`).
 
    A migração ativa o RLS em todas as tabelas, o que bloqueia a Data API pública do Supabase.
 
-## Fotos no chat (Supabase Storage)
+## Fotos e vídeos no chat (Supabase Storage)
 
 1. Em `.env.local`, defina `SUPABASE_URL=https://<ref>.supabase.co` e `SUPABASE_SECRET_KEY`. A chave fica em **Project Settings → API Keys → Secret keys** (`sb_secret_…`) ou é a `service_role` legada. Ela ignora o RLS, então **nunca** use o prefixo `NEXT_PUBLIC_`.
-2. Crie o bucket privado com `pnpm storage:setup`.
+2. Crie os buckets privados `chat-images` (fotos) e `chat-videos` (vídeos) com `pnpm storage:setup`. O script pode ser rodado de novo para atualizar limites e tipos aceitos.
 3. Na Vercel, adicione as mesmas duas variáveis em Production e Preview.
 
 ## Primeiro fluxo

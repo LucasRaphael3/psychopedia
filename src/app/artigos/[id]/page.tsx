@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { ArticleCompact } from "@/components/article-card";
 import { Avatar } from "@/components/avatar";
 import { CategoryArt } from "@/components/category-art";
 import { SectionTitle } from "@/components/pagination";
-import { getArticleBySlug, listRelated } from "@/features/articles/queries";
+import { getArticle, listRelated } from "@/features/articles/queries";
 import { categoryName } from "@/lib/categories";
 import { formatDate, readingMinutes } from "@/lib/format";
 
-export async function generateMetadata({ params }: PageProps<"/artigos/[slug]">): Promise<Metadata> {
-  const article = await getArticleBySlug((await params).slug);
+export async function generateMetadata({ params }: PageProps<"/artigos/[id]">): Promise<Metadata> {
+  const article = await getArticle((await params).id);
   return article ? { title: article.title, description: article.summary } : { title: "Artigo não encontrado" };
 }
 
@@ -26,9 +26,11 @@ function ArticleBody({ content }: { content: string }) {
   );
 }
 
-export default async function ArticlePage({ params }: PageProps<"/artigos/[slug]">) {
-  const article = await getArticleBySlug((await params).slug);
+export default async function ArticlePage({ params }: PageProps<"/artigos/[id]">) {
+  const { id } = await params;
+  const article = await getArticle(id);
   if (!article) notFound();
+  if (article.id !== id) permanentRedirect(`/artigos/${article.id}`);
   const related = await listRelated(article.category, article.id);
 
   return (
@@ -52,7 +54,7 @@ export default async function ArticlePage({ params }: PageProps<"/artigos/[slug]
               </div>
             </div>
             <Link
-              href={`/artigos/${article.slug}/compartilhar`}
+              href={`/artigos/${article.id}/compartilhar`}
               className="rounded-full border border-brand px-4 py-2 text-sm font-semibold text-brand hover:bg-brand-soft"
             >
               Compartilhar no chat

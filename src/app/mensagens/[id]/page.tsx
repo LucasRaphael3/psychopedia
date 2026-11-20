@@ -29,7 +29,7 @@ export default async function ConversationPage({ params }: PageProps<"/mensagens
           <Link href={`/autores/${conversation.other.username}`} className="text-xs text-muted hover:underline">@{conversation.other.username}</Link>
         </div>
       </header>
-      <ChatRoom conversationId={conversation.id} currentUserId={user.id} initialMessages={messages} />
+      <ChatRoom conversationId={conversation.id} currentUserId={user.id} otherName={conversation.other.name} initialMessages={messages} />
     </div>
   );
 }

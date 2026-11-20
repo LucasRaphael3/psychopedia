@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { check, index, integer, pgTable, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
+import { check, index, integer, pgTable, primaryKey, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
 
 // RLS is enabled without policies so Supabase's public Data API cannot read these tables;
 // the app connects with a privileged role that bypasses RLS.
@@ -79,10 +79,44 @@ export const messages = pgTable(
     imagePath: text("image_path"),
     imageWidth: integer("image_width"),
     imageHeight: integer("image_height"),
+    // Videos are uploaded by the browser straight to a private bucket (signed upload URL).
+    videoPath: text("video_path"),
+    videoWidth: integer("video_width"),
+    videoHeight: integer("video_height"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     readAt: timestamp("read_at", { withTimezone: true }),
   },
-  (t) => [index("messages_conversation_created_idx").on(t.conversationId, t.createdAt)],
+  (t) => [
+    index("messages_conversation_created_idx").on(t.conversationId, t.createdAt),
+    // An uploaded video can back only one message.
+    uniqueIndex("messages_video_path_idx").on(t.videoPath),
+  ],
+).enableRLS();
+
+export const messageReactions = pgTable(
+  "message_reactions",
+  {
+    messageId: uuid("message_id").notNull().references(() => messages.id, { onDelete: "cascade" }),
+    userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    emoji: text("emoji").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  // One reaction per person per message; reacting again replaces it.
+  (t) => [
+    primaryKey({ columns: [t.messageId, t.userId] }),
+    check("message_reactions_emoji_length", sql`char_length(${t.emoji}) between 1 and 16`),
+  ],
+).enableRLS();
+
+export const typingIndicators = pgTable(
+  "typing_indicators",
+  {
+    conversationId: uuid("conversation_id").notNull().references(() => conversations.id, { onDelete: "cascade" }),
+    userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    // Refreshed by the composer while the person types; considered stale after a few seconds.
+    typedAt: timestamp("typed_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [primaryKey({ columns: [t.conversationId, t.userId] })],
 ).enableRLS();
 
 export type User = typeof users.$inferSelect;

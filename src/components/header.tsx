@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { submitSearch } from "@/features/articles/actions";
 import { logout } from "@/features/auth/actions";
 import { getCurrentUser } from "@/features/auth/session";
 import { countUnread } from "@/features/chat/queries";
@@ -14,7 +15,7 @@ export async function Header() {
     <header className="border-b border-border bg-surface">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-4 px-4 py-3">
         <Logo />
-        <form action="/busca" role="search" className="order-last w-full sm:order-none sm:ml-auto sm:w-72">
+        <form action={submitSearch} role="search" className="order-last w-full sm:order-none sm:ml-auto sm:w-72">
           <label htmlFor="busca" className="sr-only">Buscar artigos</label>
           <input
             id="busca"

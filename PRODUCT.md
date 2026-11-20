@@ -19,11 +19,14 @@ Não há papéis administrativos no MVP.
 4. **Publicação:** formulário com título, resumo, categoria, texto e link de fonte opcional.
 5. **Chat:** iniciar uma conversa pelo perfil de um autor ou por @usuario. Lista de conversas com contador de não lidas e conversa que se atualiza a cada 3 s.
 6. **Fotos no chat:** anexar uma foto (JPG, PNG ou WebP, redimensionada no navegador) com legenda opcional. Só os participantes da conversa conseguem vê-la.
-7. **Compartilhar artigo:** a partir do artigo, enviar para outro membro pelo chat com mensagem opcional. O artigo aparece como cartão na conversa.
+7. **Vídeos no chat:** anexar um vídeo (MP4, MOV ou WebM, até 50 MB) com legenda opcional e barra de progresso. Só os participantes da conversa conseguem assistir.
+8. **Reações:** reagir a qualquer mensagem com um emoji (barra rápida com 6 opções e "+" para a lista completa). Cada pessoa tem uma reação por mensagem, que pode trocar ou remover.
+9. **Emojis e "digitando":** aba de emojis no campo de mensagem e aviso "Fulano está digitando…" na conversa.
+10. **Compartilhar artigo:** a partir do artigo, enviar para outro membro pelo chat com mensagem opcional. O artigo aparece como cartão na conversa.
 
 ## Fora do escopo (por enquanto)
 
-Edição e exclusão de artigos, comentários, curtidas, imagens nos artigos, GIFs e vídeos no chat, recuperação de senha, verificação de e-mail, moderação e denúncias, notificações por e-mail, chat em grupo e tempo real via WebSocket.
+Edição e exclusão de artigos, comentários, curtidas, imagens nos artigos, GIFs no chat, recuperação de senha, verificação de e-mail, moderação e denúncias, notificações por e-mail, chat em grupo e tempo real via WebSocket.
 
 ## Requisitos
 
@@ -48,6 +51,7 @@ Next.js 16 (App Router), TypeScript estrito, Tailwind 4, Drizzle ORM com Postgre
 - Um membro publica um artigo, que aparece na home, na categoria e no próprio perfil.
 - O membro A abre o perfil de B, envia uma mensagem, e B vê o contador de não lidas e a mensagem em até cerca de 3 s com a conversa aberta.
 - A compartilha um artigo com B, que vê o cartão do artigo no chat.
+- A envia um vídeo a B, que o assiste na conversa. B reage com um emoji e A vê a reação. Enquanto A digita, B vê "está digitando…".
 - Um usuário não consegue ler uma conversa da qual não participa (404 na página e na API).
 
 ## Próxima entrega

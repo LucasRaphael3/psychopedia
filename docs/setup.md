@@ -19,7 +19,10 @@ Node 22.17.1, pnpm 10.17.1, Next.js 16.4.6, React 19.3.0, Tailwind 4.3.3, drizzl
 | Schema, migração `drizzle/0000_*.sql` (5 tabelas e RLS) | validado: aplicada no Supabase (session pooler, us-east-1); `relrowsecurity = true` nas 5 tabelas |
 | Seed de demonstração | validado: 3 autores e 9 artigos |
 | Fluxos via HTTP sem JS (`pnpm start`) | validado em 2026-11-19, 15/15: cadastro, duplicado rejeitado, senha errada, publicação, início de conversa, compartilhamento, não lidas, API de polling, 404 para não participante (página e API), logout invalidando o token, bloqueio de open redirect. Contas de teste removidas depois |
-| Envio de mensagem pelo `ChatRoom` (JS, Server Action chamada no cliente) | **pendente** de teste no navegador (a extensão do Chrome não estava conectada) |
+| Migração `drizzle/0002_*.sql` (reações, "digitando" e colunas de vídeo) | validado: aplicada no Supabase em 2026-11-20; `relrowsecurity = true` e nenhuma política nas 2 tabelas novas |
+| Bucket `chat-videos` | validado: criado por `pnpm storage:setup` (privado, 50 MB, MP4/MOV/WebM) |
+| Vídeo, reações e "digitando" via HTTP (`pnpm start`) | validado em 2026-11-20, 42/42: reações (adicionar, trocar, duas pessoas, remover, emoji fora do conjunto, não participante e sem login recusados), "digitando" (marca, limpa, some ao enviar, 404/401), vídeo (upload assinado, confirmação, chave reaproveitada recusada, 302 para URL assinada com 206, 404/401, falso vídeo recusado e apagado, bucket recusa HTML, limite de 50 MB). Contas e arquivos de teste removidos depois |
+| Chat no navegador (Chrome headless via DevTools Protocol, duas sessões) | validado em 2026-11-20, 32/32: cadastro pelo formulário, "digitando…", aba de emojis (inserção no cursor, Esc), envio pelo Enter e recebimento por polling, reações (barra rápida, "+", troca, duas pessoas), vídeo MP4 enviado e reproduzido pelo outro lado, foto, composer em 390 e 360 px, sem erros no console. Contas e arquivos de teste removidos depois |
 | Git | `git init` local, sem remoto e sem commits |
 
 ## Diferenças em relação aos padrões
